@@ -31,6 +31,26 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   //! END @TODO1
   
+  app.get( "/filteredimage/", async (req: express.Request, res:express.Response) => {
+
+    let { image_url } = req.query
+
+    if ( image_url == null || image_url == undefined ) {
+      return res.status(400)
+                .send("This url is not correct.");
+    }
+
+    const imageLocalUrl = await filterImageFromURL(image_url)
+
+    res.status(200).sendFile(imageLocalUrl, function (err) {
+      if (!err) {
+        const arrLocalLink = new Array<string>()
+        arrLocalLink.push(imageLocalUrl)
+        deleteLocalFiles(arrLocalLink)
+      }
+  });
+});
+  
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
